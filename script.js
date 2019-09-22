@@ -1,7 +1,8 @@
 console.log('Add validation!');
 const submit = document.querySelector("#parking-form")
-
 const regExLetter = /^[A-Za-z\s]+$/
+const regExExpiration = /^\d{2}\/\d{2}$/
+
 function qSelect(property) {
     return document.querySelector(property)
 }
@@ -9,12 +10,16 @@ function qSelectAll(property) {
     return document.querySelectorAll(property)
 }
 function validParent(content) {
-    content.parent.classList.remove("is-invalid")
-    content.parent.classList.add("is-valid")
+    content.parentNode.classList.remove("input-invalid")
+    content.parentNode.classList.add("input-valid")
 }
 function invalidParent(content) {
-    content.parent.classList.remove("is-valid")
-    content.parent.classList.add("is-invalid")
+    content.parentNode.classList.remove("input-valid")
+    content.parentNode.classList.add("input-invalid")
+}
+function throwError(message){
+    let errDiv = document.createElement("div")
+
 }
 function validName(content) {
     if (!regExLetter.test(content)){
@@ -66,8 +71,32 @@ function validDuration(content) {
         // pass error: please enter a NUMBER between 1 and 30
     }
 }
+function validateCardNumber(number) {
+    var regex = new RegExp("^[0-9]{16}$");
+    if (!regex.test(number))
+        return false;
+
+    return luhnCheck(number);
+}
+
+function luhnCheck(val) {
+    var sum = 0;
+    for (var i = 0; i < val.length; i++) {
+        var intVal = parseInt(val.substr(i, 1));
+        if (i % 2 == 0) {
+            intVal *= 2;
+            if (intVal > 9) {
+                intVal = 1 + (intVal % 10);
+            }
+        }
+        sum += intVal;
+    }
+    return (sum % 10) == 0;
+}
 function validExpiration(content) {
-    // check that content's first 2 characters are a number from 01 through 12, that the 3rd is a /, and that the last 2 are a number between 2019 and 2025
+    if (!regExExpiration.test(content.value)){
+        invalidParent(content)
+    }
 }
 function validCVV(content) {
     if (!isNaN(content)) {
@@ -80,16 +109,15 @@ function validCVV(content) {
     }
 }
 function validateForm() {
-    let inputs = document.querySelectorAll(".input-field")
+    let inputs = document.querySelectorAll("input")
     console.log(inputs)
-    let trimmed
     for (let i of inputs) {
         console.log("looping through " + i.value)
-        // figure out how the fuck trim is called
         i.value = i.value.trim()
-        if (!trimmed) {
+        if (!i.value) {
+            console.log("no value")
+            console.log(i)
             invalidParent(i)
-            console.log("empty")
             // pass error: Please enter a value
         }
     }
