@@ -2,6 +2,11 @@ console.log('Add validation!');
 const submit = document.querySelector("#parking-form")
 const regExLetter = /^[A-Za-z\s]+$/
 const regExExpiration = /^\d{2}\/\d{2}$/
+const regExDate = /^[0-1][0-9]\/[0-3]\d{1}\/[2][0][1-9][1-9]$/
+const currentDate = new Date()
+let parkDate
+
+
 
 function qSelect(property) {
     return document.querySelector(property)
@@ -9,35 +14,45 @@ function qSelect(property) {
 function qSelectAll(property) {
     return document.querySelectorAll(property)
 }
-function validParent(content) {
-    content.parentNode.classList.remove("input-invalid")
-    content.parentNode.classList.add("input-valid")
+function validParent(input) {
+    input.parentNode.classList.remove("input-invalid")
+    input.parentNode.classList.add("input-valid")
 }
-function invalidParent(content) {
-    content.parentNode.classList.remove("input-valid")
-    content.parentNode.classList.add("input-invalid")
+function invalidParent(input) {
+    input.parentNode.classList.remove("input-valid")
+    input.parentNode.classList.add("input-invalid")
 }
-function throwError(message){
+function throwError(message, invalidInput) {
     let errDiv = document.createElement("div")
-
+    errDiv.classList.add("error")
+    errDiv.textContent = message
+    invalidInput.parentNode.appendChild(errDiv)
 }
-function validName(content) {
-    if (!regExLetter.test(content)){
+function clearErrors() {
+    let errors = qSelectAll(".error")
+    for (let error of errors){
+        error.parentNode.removeChild(error)
+    }
+}
+function validName(input) {
+    let content = input.value
+    if (!regExLetter.test(content)) {
         invalidParent(content)
-        // throw error: Please enter a valid name (letters and spaces only)
+        throwError("Please enter a valid name (only use letters and spaces", content)
     } else {
         validParent(content)
     }
 }
 
-function validYear(content) {
+function validYear(input) {
+    let content = input.value
     if (!isNaN(content)) {
         // ensure that input is in a valid range
-        if (1900 < content < 2019) {
-            validParent(content)
+        if (1900 < content && content <= currentDate.getFullYear()) {
+            validParent(input)
         } else {
-            invalidParent(content)
-            // pass error: please select a year between 1900 and 2019
+            invalidParent(input)
+            // pass error: please select a year from between 1900 and today
         }
     } else {
         invalidParent(content)
@@ -45,18 +60,13 @@ function validYear(content) {
     }
 }
 function validParkDate(content) {
-    // Make sure that input is a date. Then compare to ensure it's after present date
-    if (isDate) {
-        if (dateInFuture) {
-            validParent(content)
-        } else {
-            invalidParent(content)
-            // pass error: Unless that's one special delorean you're driving, please select a date in the future
-        }
-    } else {
-        invalidParent(content)
-        // pass error please enter a valid date
-    }
+    let month = eval (content.slice(0, 2) -1)
+    let day = content.slice(3, 5)
+    let year = content.slice(-4)
+    console.log(month, day, year)
+    parkdate = new Date(year, month, day)
+    console.log(parkdate < currentDate)
+
 }
 function validDuration(content) {
     if (!isNaN(content)) {
@@ -94,7 +104,7 @@ function luhnCheck(val) {
     return (sum % 10) == 0;
 }
 function validExpiration(content) {
-    if (!regExExpiration.test(content.value)){
+    if (!regExExpiration.test(content.value)) {
         invalidParent(content)
     }
 }
@@ -109,6 +119,7 @@ function validCVV(content) {
     }
 }
 function validateForm() {
+    clearErrors()
     let inputs = document.querySelectorAll("input")
     console.log(inputs)
     for (let i of inputs) {
@@ -118,13 +129,13 @@ function validateForm() {
             console.log("no value")
             console.log(i)
             invalidParent(i)
-            // pass error: Please enter a value
+            throwError("Please enter a value",i)
         }
     }
 }
 
 submit.addEventListener(
-    'submit', function(event){
+    'submit', function (event) {
         event.preventDefault()
         validateForm()
     })
