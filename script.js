@@ -144,7 +144,26 @@ function validateForm() {
     }
     validName(qSelect("#name"))
     validYear(qSelect("#car-year"))
-
+}
+function price(){
+    let start = getParkDate()
+    let days = qSelect("#days").value
+    let price = 0
+    let weekday = start.getDay()
+    for (let i = 0; i < days; i++){
+        if (weekday === 0){
+            price += 7
+            weekday++
+        } else if (weekday < 6){
+            price += 5
+            weekday++
+        } else {
+            price += 7
+            weekday = 0
+        }
+    }
+    qSelect("#total").textContent = "Your total parking cost is: $" + price
+    return price
 }
 
 submit.addEventListener(
