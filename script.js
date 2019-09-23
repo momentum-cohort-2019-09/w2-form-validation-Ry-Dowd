@@ -1,3 +1,5 @@
+// Still need to properly link the verifications and their functions and fill out the error messages, but the skeleton is here, and I got some good practice building regular expressions.
+
 console.log('Add validation!');
 const submit = document.querySelector("#parking-form")
 const regExLetter = /^[A-Za-z\s]+$/
