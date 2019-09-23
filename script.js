@@ -4,7 +4,6 @@ const regExLetter = /^[A-Za-z\s]+$/
 const regExExpiration = /^\d{2}\/\d{2}$/
 const regExDate = /^[0-1][0-9]\/[0-3]\d{1}\/[2][0][1-9][1-9]$/
 const currentDate = new Date()
-let parkDate
 
 
 
@@ -59,14 +58,23 @@ function validYear(input) {
         // pass error: last I checked years only contain numbers
     }
 }
+function convertToDate(date){
+    let month = eval (date.slice(5, 7) -1)
+    let day = date.slice(-2)
+    let year = date.slice(0,4)
+    return new Date(year, month, day)
+}
 function validParkDate(content) {
-    let month = eval (content.slice(0, 2) -1)
-    let day = content.slice(3, 5)
-    let year = content.slice(-4)
+    
     console.log(month, day, year)
     parkdate = new Date(year, month, day)
     console.log(parkdate < currentDate)
-
+    console.log (parkdate)
+}
+function getParkDate(){
+    let parkInput = qSelect("#start-date")
+    let startDate = convertToDate(parkInput.value)
+    return startDate
 }
 function validDuration(content) {
     if (!isNaN(content)) {
@@ -132,6 +140,9 @@ function validateForm() {
             throwError("Please enter a value",i)
         }
     }
+    validName(qSelect("#name"))
+    validYear(qSelect("#car-year"))
+
 }
 
 submit.addEventListener(
